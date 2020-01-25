@@ -1,43 +1,40 @@
 const express = require('express');
 const port = 3000;
-const app = express();
 const path = require('path');
+const createError = require('http-errors');
+
+const indexRoute = require('./routes/index');
+const resumeRoute = require('./routes/resume');
 
 const ResumeController = require('./controller/resume-controller');
 
+const app = express();
 
-
-
-
-app.get('/resume',(req, res, next) => {
-    res.render('resume', {
-        title: 'Meu currículo',
-        name: 'William Oliveira',
-        profession: 'Software Engineer',
-        description: 'Experiência em desenvolvimento de single page applications com JavaScript e frameworks JavaScript (já trabalhei com Angular e React), module bundlers, package managers, transpilers (como Babel), pre processadores CSS (Sass e Stylus), task managers, arquitetura CSS (como BEM e SMACSS), Git, SEO, acessibilidade e usabilidade.',
-        experience: [{
-            company: 'Loggi Tecnologia',
-            office: 'Software Engineer',
-            description: 'Trabalho no squad de desenvolvimento do software de gestão de warehouses da Loggi, o ProXD. Nosso trabalho é automatizar os processos de recebimento, gestão, armazenamento, transferências e expedição de pacotes, cortes, rotas e monitoramento dos pacotes e sacas de entregas para ecommerces.'
-        },
-        {
-            company: 'Casa do Código',
-            office: 'Escritor',
-            description: 'Autor do livro: O universo da programação: Um guia de carreira em desenvolvimento de software'
-        }],
-        education: [{
-            institution: 'Vida',
-            description: 'Sobrevivência nas ruas'
-        }],
-        skills: ['backend', 'frontend', 'infra', 'mobile']
-    });
-});
-
-app.listen(port, err=>{
-    console.log(`Server is listening on ${port}`);
-});
-
+app.use(express.static(path.join(__dirname, 'public')));
 
 //setup view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+app.get('/', indexRoute);
+app.get('/resume', resumeRoute);
+
+
+
+// 404
+app.use((req, res, next) => {
+    next(createError(404));
+});
+
+// error handler
+app.use((err, req, res, next) => {
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+    res.status(err.status || 500);
+    res.render('error');
+});
+
+app.listen(port, err => {
+    console.log(`Server is listening on ${port}`);
+});
