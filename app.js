@@ -10,7 +10,7 @@ const ResumeController = require('./controller/resume-controller');
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, 'public')));
+
 
 //setup view engine
 app.set('views', path.join(__dirname, 'views'));
@@ -19,9 +19,11 @@ app.set('view engine', 'ejs');
 app.get('/', indexRoute);
 app.get('/resume', resumeRoute);
 
-
+//app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname + '/public'));
 
 // 404
+
 app.use((req, res, next) => {
     next(createError(404));
 });
