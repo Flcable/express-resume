@@ -7,12 +7,7 @@ const ResumeController = require('./controller/resume-controller');
 
 
 
-app.get('/', (req, res, next)=>{
-    res.render('index',{
-        title: "Meu primeiro servidor Express",
-        version: "0.0.0"
-    });
-});
+
 
 app.get('/resume',(req, res, next) => {
     res.render('resume', {
